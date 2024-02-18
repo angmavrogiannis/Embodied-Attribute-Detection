@@ -9,7 +9,7 @@ rotate()
 find()
 detect_object()
 focus(image_patch)
-verify_property(obj, property)
+verify_property(object, property)
 
 # Example Tasks
 
@@ -52,3 +52,5 @@ while verify_property("light", "on"):
 # 9. Go back and forth and stop once you see movement
 
 # 10. Take five steps forward, each time stoping for a second in between
+
+# 11. Follow the person who is moving

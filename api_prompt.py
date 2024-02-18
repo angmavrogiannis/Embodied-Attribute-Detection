@@ -4,32 +4,100 @@ class Robot:
 	"""
 	A Python class describing the actions that a robot can make.
 	"""
-	def go_to(object_name: str):
-		"""Move towards an object and stop once you are close to it."""
+    def go_to_coords(object_x_center: int, object_y_center: int):
+        """Auxiliary function that uses low-level controls of the robot 
+        to navigate to an object with the given (x_coord, y_coord) image coordinates.
 
-	def move_forward(distance: float):
-		"""Move forward for a given distance"""
+        Examples
+        -------
+        >>> # Move towards the desk that has center coords: desk_x_center, desk_y_center
+        >>> def execute_command(desk_x_center, desk_y_center):
+        >>>     go_to_coords(desk_x_center, desk_y_center)
+        """
 
-	def move_backwards(distance: float):
-		"""Move backwards for a given distance"""
+	def go_to_object(object_patch: ImagePatch):
+		"""Computes the center coordinates of an image patch and calls go_to_coords
+        to navigate to an object.
+        Examples
+        -------
+        >>> # Approach the red round object
+        >>> def execute_command(image):
+        >>>     image_patch = ImagePatch(image)
+        >>>     object_patches = image_patch.find("object")
+        >>>     for object_patch in object_patches:
+        >>>         is_red = object_patch.verify_property("object", "red")
+        >>>         if is_red:
+        >>>             is_round = object_patch.verify_property("object", "round")
+        >>>             if is_round:
+        >>>                 go_to_object(desk_center_x, desk_center_y)
+        >>>                 break
+        """
+            object_center_x = (object_patch.left + object_patch.right) / 2
+            object_center_y = (object_patch.lower + object_patch.upper) / 2
+            go_to_coords(object_center_x, object_center_y)
 
-	def move_right(distance: float):
-		"""Move right for a given distance"""
+    def pick_up(object_patch: ImagePatch):
+        """Uses low-level controls of the robot to pick up an object.
 
-	def move_left(distance: float):
-		"""Move left for a given distance"""
+        Examples
+        -------
+        >>> # Grab the remote and put it on the green box
+        >>> def execute_command(image):
+        >>>     image_patch = ImagePatch(image)
+        >>>     remote_patch = image_patch.find("remote")
+        >>>     go_to_object(remote_patch)
+        >>>     pick_up(remote_patch)
+        >>>     box_patches = image_patch.find("box")
+        >>>     for box_patch in box_patches:
+        >>>         is_green = box_patch.verify_property("box", "green")
+        >>>         if is_green:
+        >>>             go_to_object(box_patch)
+        >>>             put_on(box_patch)
+        >>>             break
+        """
 
-	def rotate(angle: float):
-		"""Rotate counter-clockwise by the amount of radians given as input."""
+    def put_on(object_patch: ImagePatch):
+        """Uses low-level controls of the robot to put an object that has
+        picked up on another object in the given object_patch.
 
-	def stop():
-		"""Stop in place and await for further instructions."""
+        Examples
+        -------
+        >>> # Get the sweet snack and stack it onto the white stand
+        >>> def execute_command(image):
+        >>>     image_patch = ImagePatch(image)
+        >>>     snack_patches = image_patch.find("snack")
+        >>>     snacks = []
+        >>>     for snack_patch in snack_patches:
+        >>>         is_sweet = snack_patch.simple_query("Is this snack sweet?")
+        >>>         if is_sweet:
+        >>>             go_to_object(snack_patch)
+        >>>             pick_up(snack_patch)
+        >>>             stand_patch = image_patch.find("stand")
+        >>>             is_white = stand_patch.verify_property("stand", "white")
+        >>>             if is_white:
+        >>>                 go_to_object(stand_patch)
+        >>>                 put_on(stand_patch)
+        """
 
-	def look_around():
-		"""Look around in case you cannot find an object."""
+    def push():
+        """Uses low-level controls of the robot to push an object forward.
 
-	def debug():
-		"""objects"""
+        Examples
+        -------
+        >>> # Something on the table stinks. Please drop it to the floor.
+        >>> def execute_command(image):
+        >>>     image_patch = ImagePatch(image)
+        >>>     table_patch = image_patch.find("table")
+        >>>     if table_patch:
+        >>>         go_to_object(table_patch)
+        >>>         object_patches = image_patch.find("object")
+        >>>         for object_patch in object_patches:
+        >>>             object_name = object_patch.simple_query("What is this object?")
+        >>>             stinks = object_patch.llm_query(f"Does a {object_name} stink?", long_answer=False)
+        >>>             if stinks:
+        >>>                 go_to_object(object_patch)
+        >>>                 push(object_patch)
+        """
 
 class ImagePatch:
     """A Python class containing a crop of an image centered around a particular object, as well as relevant information.
@@ -188,27 +256,6 @@ class ImagePatch:
         """
         return simple_query(self.cropped_image, question)
 
-    def compute_depth(self):
-        """Returns the median depth of the image crop
-        Parameters
-        ----------
-        Returns
-        -------
-        float
-            the median depth of the image crop
-
-        Examples
-        --------
-        >>> # the bar furthest away
-        >>> def execute_command(image)->ImagePatch:
-        >>>     image_patch = ImagePatch(image)
-        >>>     bar_patches = image_patch.find("bar")
-        >>>     bar_patches.sort(key=lambda bar: bar.compute_depth())
-        >>>     return bar_patches[-1]
-        """
-        depth_map = compute_depth(self.cropped_image)
-        return depth_map.median()
-
     def crop(self, left: int, lower: int, right: int, upper: int) -> ImagePatch:
         """Returns a new ImagePatch cropped from the current ImagePatch.
         Parameters
@@ -297,6 +344,9 @@ Write a function using Python and the Robot and ImagePatch classes (above) that 
 
 Consider the following guidelines:
 - Use base Python (comparison, sorting) for basic logical operations, left/right/up/down, math, etc.
-- Use the llm_query function to access external information and answer informational questions not concerning the image.
+- Use the find function to detect objects.
+- Use the verify_property function to verify visually identifiable properties.
+- Use the simple_query function for simple visual queries.
+- Use the llm_query function to access external information and answer informational questions to solve queries and identify attributes that are not visually obvious (e.g. weight of an object)
 
 Instruction: Tread towards the small door.
