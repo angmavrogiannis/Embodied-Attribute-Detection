@@ -12,6 +12,14 @@ import cv2
 def normalize_coords(pixel_coord, dimension):
     return 2 * pixel_coord / dimension - 1
 
+class Distance:
+    def __init__(self):
+        self.distance = None
+
+    def sub_data_handler(self, sub_info):
+        distance = sub_info
+        self.distance = distance[0]
+
 class PID:
     def __init__(self, kp, ki, kd, dt):
         self.kp = kp
@@ -36,18 +44,25 @@ if __name__ == '__main__':
     ep_robot.initialize(conn_type="sta")
     ep_chassis = ep_robot.chassis
     ep_camera = ep_robot.camera
+
+    # Initializing and subscribing to distance sensor
     ep_sensor = ep_robot.sensor
+    ir_distance = Distance()
+    ep_sensor.sub_distance(freq=5, callback=ir_distance.sub_data_handler)
+    time.sleep(0.25)
 
     # Get the latest 1 frame image display each time, and stay for 1 second
     ep_camera.start_video_stream(display=False)
     curr_frame = ep_camera.read_cv2_image(strategy="newest")
     cv2.imwrite("curr_frame.jpg", curr_frame)
-    curr_frame
-    with open("bbox.txt", "w") as f:
-        detected_bbox_coords = f.read()
+
+    # Run GLIP to detect object on the cluster
+    # exec(open("client.py").read())
+    with open("bbox.txt", "r") as f:
+        detected_bbox_coords = f.read().rstrip()
 
     # [xmin, ymin, xmax, ymax]
-    detected_bbox_coords = [int(val) for val in curr_bbox.strip('][').split(', ')]
+    detected_bbox_coords = [int(val) for val in detected_bbox_coords.strip('][').split(', ')]
     xmin = detected_bbox_coords[0]
     ymin = detected_bbox_coords[1]
     xmax = detected_bbox_coords[2]
@@ -69,17 +84,18 @@ if __name__ == '__main__':
     longitudinal_threshold = 10
 
     height, width, channels = curr_frame.shape
-    max_distance = 200
+    max_distance = 6000
 
     # target lateral position: centering object patch in image frame
     target_x_pos = int(width / 2)
 
     # target longitudinal position: 200mm from the object
-    target_z_pos = 200
+    target_z_pos = 260
 
     play_realtime = True
     save_to_file = False
-
+    print("Entering loop")
+    breakpoint()
     try:
         while finished == False:
             curr_time = time.time()
@@ -108,7 +124,7 @@ if __name__ == '__main__':
             cX = int(xmin + boxw / 2)
 
             # Get the reading for the current distance to the object from the IR sensor
-            cZ = ep_sensor.ir_distance_sensor_ctrl.get_distance_info(1) # param: port_id
+            cZ = ir_distance.distance # param: port_id
 
             print("Center of patch x position in image frame: ", cX)
             print("Current distance from object: ", cZ)
@@ -142,7 +158,7 @@ if __name__ == '__main__':
             (xmin, ymin, boxw, boxh) = cv2.boundingRect(curr_bbox[:, :].astype(int))
             frame_draw = cv2.rectangle(frame_draw, (xmin, ymin), (xmin + boxw, ymin + boxh), (255,0,0), 2)
             for k in range(startXs.shape[0]):
-                frame_draw = cv2.circle(frames_draw, (int(startXs[k]), int(startYs[k])), 3, (0, 0, 255), thickness=2)
+                frame_draw = cv2.circle(frame_draw, (int(startXs[k]), int(startYs[k])), 3, (0, 0, 255), thickness=2)
             
             # imshow if to play the result in real time
             if play_realtime:
