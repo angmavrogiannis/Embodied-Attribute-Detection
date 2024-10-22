@@ -26,7 +26,7 @@ Please cite our work if you found it useful:
 <p align="center">
   <img src="/images/attributes_pipeline.jpeg" alt="Pipeline" />
 </p>
-We describe our end-to-end framework for embodied attribute detection. The LLM receives as input a perception API with LLMs and VLMs as backbones, an action API based on a Robot Control API, a natural language (NL) instruction from a user, and a visual scene observation. It then produces a python program that combines LLM and VLM function calls with robot actions to actively reason about attribute detection.
+$x_1$ We describe our end-to-end framework for embodied attribute detection. The LLM receives as input a perception API with LLMs and VLMs as backbones, an action API based on a Robot Control API, a natural language (NL) instruction from a user, and a visual scene observation. It then produces a python program that combines LLM and VLM function calls with robot actions to actively reason about attribute detection.
 
 # Perception-Action API
 <p align="center">
