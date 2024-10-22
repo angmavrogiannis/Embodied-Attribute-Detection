@@ -38,8 +38,8 @@ The API consists of an $$\mathtt{ImagePatch}$$ class and a $\mathtt{Robot}$ acti
 
 # AI2-THOR Simulation
 <p align="center">
-  <img src="/images/distance.gif" alt="Distance Estimation GIF" width="500px">
-  <img src="/images/weight.gif" alt="Weight Estimation GIF" width="500px">
+  <img src="/images/distance.gif" alt="Distance Estimation GIF" width="400px">
+  <img src="/images/weight.gif" alt="Weight Estimation GIF" width="400px">
 </p>
 
 We integrate the perception-action API in different AI2-THOR household environments. In the <b>Distance Estimation</b> task (<em>left</em>) the robot has to identify which object is closer to its camera. We use the question ”<em>which one is closer to me</em>?” followed by the objects in question. Our API invokes an active perception behavior that computes the distance to an object by fixating on it with a call to $\mathtt{focus\\_on\\_patch}$. It then calls the $min$ function to find the smallest distance. In <b>Weight Estimation</b> (<em>right</em>), the invoked behavior determines the weight of an object by navigating to it ($\mathtt{go\\_to\\_object}$), picking it up ($\mathtt{pick\\_up}$) and calling $\mathtt{measure\\_weight}$, which simulates the use of a force/torque sensor mounted on the wrist of the robot arm.
