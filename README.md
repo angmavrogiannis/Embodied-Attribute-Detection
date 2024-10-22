@@ -26,7 +26,7 @@ Please cite our work if you found it useful:
 <p align="center">
   <img src="/images/attributes_pipeline.jpeg" alt="Pipeline" />
 </p>
-$x_1$ We describe our end-to-end framework for embodied attribute detection. The LLM receives as input a perception API with LLMs and VLMs as backbones, an action API based on a Robot Control API, a natural language (NL) instruction from a user, and a visual scene observation. It then produces a python program that combines LLM and VLM function calls with robot actions to actively reason about attribute detection.
+We describe our end-to-end framework for embodied attribute detection. The LLM receives as input a perception API with LLMs and VLMs as backbones, an action API based on a Robot Control API, a natural language (NL) instruction from a user, and a visual scene observation. It then produces a python program that combines LLM and VLM function calls with robot actions to actively reason about attribute detection.
 
 # Perception-Action API
 <p align="center">
@@ -43,6 +43,6 @@ We integrate the perception-action API in different AI2-THOR household environme
 
 # Robot Demonstration
 <p align="center">
-  <img src="/images/icra_demonstration" alt="Robot Demonstration" />
+  <img src="/images/icra_demonstration.gif" alt="Robot Demonstration" />
 </p>
 We integrate our framework into a <a href="https://www.dji.com/robomaster-ep">RoboMaster EP</a> robot with the $\mathtt{Robot}$ class as a wrapper over the <a href="https://github.com/dji-sdk/RoboMaster-SDK">RoboMaster SDK</a>. The robot is connected to a (<em>local</em>) computer via wifi connection and communicates with a (<em>remote</em>) computing cluster through a client-server architecture running on an SSH tunnel. We only run OVD on the first frame captured by the robot camera to reduce latency, and then track the corresponding position(s) with the Kanade–Lucas–Tomasi (KLT) feature tracker (<a href="https://github.com/ZheyuanXie/KLT-Feature-Tracking">github implementation</a>). We tune a lateral PID controller to align the geometric centers of the robot camera and the object bounding box to implement the $\mathtt{focus\_on\_patch}$ function. To approach an object and implement the $\mathtt{go\_to\_object}$ function we use an infrared distance sensor mounted on the front of the robot and tune a longitudinal PID controller. The video above shows the robot performing active distance estimation using our framework.
