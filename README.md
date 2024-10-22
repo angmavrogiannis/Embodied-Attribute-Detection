@@ -21,6 +21,7 @@ Please cite our work if you found it useful:
 <p align="center">
   <img src="/images/attributes_cover.jpeg" alt="Cover" />
 </p>
+
 # Overview
 <p align="center">
   <img src="/images/attributes_pipeline.jpeg" alt="Pipeline" />
