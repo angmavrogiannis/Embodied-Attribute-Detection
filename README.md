@@ -1,6 +1,6 @@
 # Discovering Object Attributes by Prompting Large Language Models with Perception-Action APIs
 
-This repository contains code and technical details for the paper:
+This repository contains code and technical details for the ICRA 2025 paper:
 
 **[Discovering Object Attributes by Prompting Large Language Models with Perception-Action APIs](https://arxiv.org/abs/2409.15505)** (**[website](https://prg.cs.umd.edu/EmbodiedAttributeDetection)**)
 
